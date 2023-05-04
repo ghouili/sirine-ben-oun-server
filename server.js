@@ -15,8 +15,17 @@ app.use(express.json());
 app.use(cors());
 
 let socketList = {};
+// app.use(express.urlencoded({ extended: true }));
 
-// app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
+
+// if (process.env.NODE_ENV === "production") {
+//     app.use(express.static(path.join(__dirname, "../front/build")));
+
+//     app.get("/*", function (req, res) {
+//         res.sendFile(path.join(__dirname, "../front/build/index.html"));
+//     });
+// }
 
 // Socket
 io.on("connection", (socket) => {
@@ -82,15 +91,7 @@ io.on("connection", (socket) => {
 
     socket.on("BE-send-message", ({ roomId, msg, sender, time }) => {
         // sebnder : sender try catch
-        try {
-            db.Data.create({
-                sender: sender,
-                msg: msg,
-                room: roomId,
-            });
-        } catch (err) {
-            console.log(err);
-        }
+        
         io.sockets.in(roomId).emit("FE-receive-message", { msg, sender, time });
     });
 
